@@ -151,7 +151,7 @@ namespace livox_ros
     void Lddc::InitPointcloud2MsgHeader(sensor_msgs::PointCloud2 &cloud)
     {
         cloud.header.frame_id.assign(frame_id_);
-        cloud.header.stamp = ros::Time::now();
+        // cloud.header.stamp = ros::Time::now();
         cloud.height = 1;
         cloud.width = 0;
         cloud.fields.resize(6);
@@ -230,7 +230,9 @@ namespace livox_ros
             /** Use the first packet timestamp as pointcloud2 msg timestamp */
             if (!published_packet)
             {
-                cloud.header.stamp = ros::Time(timestamp / 1000000000.0);
+                std::cout << "@test published_packet-----" << std::endl;
+                // cloud.header.stamp = ros::Time(timestamp / 1000000000.0);
+                cloud.header.stamp = ros::Time::now();
             }
             uint32_t single_point_num = storage_packet.point_num * echo_num;
 
