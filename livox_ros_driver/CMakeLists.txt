@@ -30,10 +30,15 @@ find_package(catkin REQUIRED COMPONENTS
 	message_generation
 	rosbag
 	pcl_ros
+	image_transport
+	cv_bridge
 	)
 
 ## Find pcl lib
 find_package(PCL REQUIRED)
+
+find_package( OpenCV 3.2.0)
+include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 ## Generate messages in the 'msg' folder
 add_message_files(FILES
@@ -141,6 +146,8 @@ add_executable(${PROJECT_NAME}_node
     ""
     )
 
+add_executable(publish_image_node livox_ros_driver/publish_image.cpp)
+
 #---------------------------------------------------------------------------------------
 # precompile macro and compile option
 #---------------------------------------------------------------------------------------
@@ -148,10 +155,15 @@ target_compile_options(${PROJECT_NAME}_node
     PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall>
     )
 
+target_compile_options(publish_image_node
+	PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall>
+	)
+
 #---------------------------------------------------------------------------------------
 # add projects that depend on
 #---------------------------------------------------------------------------------------
 add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_generate_messages_cpp)
+# add_dependencies(publish_image_node publish_image_generate_messages_cpp)
 
 #---------------------------------------------------------------------------------------
 # source file
@@ -173,6 +185,11 @@ target_sources(${PROJECT_NAME}_node
 	common/comm/gps_protocol.cpp
 	)
 
+target_sources(publish_image_node
+	PRIVATE
+	livox_ros_driver/publish_image.cpp
+	)
+
 #---------------------------------------------------------------------------------------
 # include file
 #---------------------------------------------------------------------------------------
@@ -190,6 +207,13 @@ target_include_directories(${PROJECT_NAME}_node
     livox_ros_driver
     )
 
+target_include_directories(publish_image_node
+	PUBLIC
+	${catkin_INCLUDE_DIRS}
+    ${PCL_INCLUDE_DIRS}
+    ${APR_INCLUDE_DIRS}
+	)
+
 #---------------------------------------------------------------------------------------
 # link libraries
 #---------------------------------------------------------------------------------------
@@ -201,12 +225,20 @@ target_link_libraries(${PROJECT_NAME}_node
 	${APR_LIBRARIES}
 	)
 
+target_link_libraries(publish_image_node ${catkin_LIBRARIES} ${OpenCV_LIBS})
+
 
 #---------------------------------------------------------------------------------------
 # Install
 #---------------------------------------------------------------------------------------
 
 install(TARGETS ${PROJECT_NAME}_node
+	ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+	LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+	RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+	)
+
+install(TARGETS publish_image_node
 	ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 	LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 	RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

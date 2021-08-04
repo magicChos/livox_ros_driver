@@ -1,0 +1,4 @@
+<launch>
+    <node name="image_publisher" pkg="livox_ros_driver" type="publish_image_node" output="screen" />
+
+</launch>
