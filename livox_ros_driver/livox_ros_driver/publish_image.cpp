@@ -33,12 +33,14 @@ int main(int argc, char **argv)
 
     std_msgs::Header header;
     header.frame_id = "camera/color_image_raw";
-    header.stamp = ros::Time::now();
 
     cv::Mat frame;
     ros::Rate loop_rate(30);
     while (ros::ok())
     {
+        header.stamp = ros::Time::now();
+        // double t = header.stamp.toSec();
+        // printf("time: %f\n", t);
         cap >> frame;
         sensor_msgs::ImagePtr msg = cv_bridge::CvImage(header, "bgr8", frame).toImageMsg();
         pub.publish(msg);
